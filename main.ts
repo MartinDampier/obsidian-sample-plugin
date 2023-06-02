@@ -10,19 +10,24 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
+export default class ForbiddenLandsCharacterSheet extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
+		const CharacterRibbon = this.addRibbonIcon('book', 'Sample Plugin', (evt: MouseEvent) => {
 			// Called when the user clicks the icon.
 			new Notice('This is a notice!');
 		});
+		const GearRibbon = this.addRibbonIcon('backpack', 'Sample Plugin', (evt: MouseEvent) => {
+			// Called when the user clicks the icon.
+			new Notice('This is a notice!');
+		});
+		// Per
 		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
+		CharacterRibbon.addClass('my-plugin-ribbon-class');
 
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
@@ -108,9 +113,9 @@ class SampleModal extends Modal {
 }
 
 class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+	plugin: ForbiddenLandsCharacterSheet;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: ForbiddenLandsCharacterSheet) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -123,10 +128,21 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('Character Sheet')
+			.setDesc('Set a note to be your character sheet')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
+				.setPlaceholder('Select a note')
+				.setValue(this.plugin.settings.mySetting)
+				.onChange(async (value) => {
+					console.log('Secret: ' + value);
+					this.plugin.settings.mySetting = value;
+					await this.plugin.saveSettings();
+				}));
+		new Setting(containerEl)
+			.setName('Equipment Sheet')
+			.setDesc('Set a note to be your equipment sheet')
+			.addText(text => text
+				.setPlaceholder('Select a note')
 				.setValue(this.plugin.settings.mySetting)
 				.onChange(async (value) => {
 					console.log('Secret: ' + value);
